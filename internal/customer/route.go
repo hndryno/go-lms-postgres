@@ -9,4 +9,5 @@ func RegisterRoutes(
 	customers := router.Group("/customer")
 
 	customers.Post("/", handler.Create)
+	customers.Get("/", handler.List)
 }

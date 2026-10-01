@@ -62,3 +62,25 @@ func (s *Service) Create(
 		},
 	)
 }
+
+func (s *Service) List(
+	ctx context.Context,
+	limit int32,
+	offset int32,
+) ([]db.Customer, int64, error) {
+	customers, err := s.repository.List(
+		ctx,
+		limit,
+		offset,
+	)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	total, err := s.repository.Count(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return customers, total, nil
+}

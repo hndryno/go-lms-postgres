@@ -12,3 +12,14 @@ VALUES (
     $4
 )
 RETURNING *;
+
+-- name: ListCustomers :many
+SELECT *
+FROM customers
+ORDER BY created_at DESC
+LIMIT $1
+OFFSET $2;
+
+-- name: CountCustomers :one
+SELECT COUNT(*)
+FROM customers;

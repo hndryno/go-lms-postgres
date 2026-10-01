@@ -1,6 +1,8 @@
 package customer
 
 import (
+	"strconv"
+
 	"github.com/gofiber/fiber/v3"
 	"github.com/hndryno/go-lms-postgresql/internal/response"
 )
@@ -45,6 +47,66 @@ func (h *Handler) Create(c fiber.Ctx) error {
 			fiber.StatusCreated,
 			"customer created successfully",
 			customer,
+		),
+	)
+}
+
+func (h *Handler) List(c fiber.Ctx) error {
+	limit := int32(10)
+	offset := int32(0)
+
+	if value := c.Query("limit"); value != "" {
+		parsed, err := strconv.Atoi(value)
+		if err != nil || parsed <= 0 {
+			return c.Status(fiber.StatusBadRequest).JSON(
+				response.Error(
+					fiber.StatusBadRequest,
+					"invalid limit",
+				),
+			)
+		}
+
+		limit = int32(parsed)
+	}
+
+	if value := c.Query("offset"); value != "" {
+		parsed, err := strconv.Atoi(value)
+		if err != nil || parsed < 0 {
+			return c.Status(fiber.StatusBadRequest).JSON(
+				response.Error(
+					fiber.StatusBadRequest,
+					"invalid offset",
+				),
+			)
+		}
+
+		offset = int32(parsed)
+	}
+
+	customers, total, err := h.service.List(
+		c.Context(),
+		limit,
+		offset,
+	)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			response.Error(
+				fiber.StatusInternalServerError,
+				err.Error(),
+			),
+		)
+	}
+
+	return c.JSON(
+		response.SuccessWithPagination(
+			fiber.StatusOK,
+			"customers retrieved successfully",
+			customers,
+			response.Pagination{
+				Limit:  int(limit),
+				Offset: int(offset),
+				Total:  total,
+			},
 		),
 	)
 }

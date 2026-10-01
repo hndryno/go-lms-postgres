@@ -22,3 +22,23 @@ func (r *Repository) Create(
 ) (db.Customer, error) {
 	return r.queries.CreateCustomer(ctx, params)
 }
+
+func (r *Repository) List(
+	ctx context.Context,
+	limit int32,
+	offset int32,
+) ([]db.Customer, error) {
+	return r.queries.ListCustomers(
+		ctx,
+		db.ListCustomersParams{
+			Limit:  limit,
+			Offset: offset,
+		},
+	)
+}
+
+func (r *Repository) Count(
+	ctx context.Context,
+) (int64, error) {
+	return r.queries.CountCustomers(ctx)
+}
