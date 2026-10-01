@@ -142,3 +142,21 @@ func (s *Service) Update(
 
 	return customer, nil
 }
+
+func (s *Service) Delete(
+	ctx context.Context,
+	id uuid.UUID,
+) error {
+	result, err := s.repository.Delete(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected := result.RowsAffected()
+
+	if rowsAffected == 0 {
+		return ErrCustomerNotFound
+	}
+
+	return nil
+}

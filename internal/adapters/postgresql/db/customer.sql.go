@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -67,14 +68,13 @@ func (q *Queries) CreateCustomer(ctx context.Context, arg CreateCustomerParams) 
 	return i, err
 }
 
-const deleteCustomer = `-- name: DeleteCustomer :exec
+const deleteCustomer = `-- name: DeleteCustomer :execresult
 DELETE FROM customers
 WHERE id = $1
 `
 
-func (q *Queries) DeleteCustomer(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteCustomer, id)
-	return err
+func (q *Queries) DeleteCustomer(ctx context.Context, id uuid.UUID) (pgconn.CommandTag, error) {
+	return q.db.Exec(ctx, deleteCustomer, id)
 }
 
 const getCustomer = `-- name: GetCustomer :one

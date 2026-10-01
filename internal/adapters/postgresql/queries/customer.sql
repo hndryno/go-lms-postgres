@@ -40,6 +40,6 @@ SET
 WHERE id = $1
 RETURNING *;
 
--- name: DeleteCustomer :exec
+-- name: DeleteCustomer :execresult
 DELETE FROM customers
 WHERE id = $1;

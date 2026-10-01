@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/hndryno/go-lms-postgresql/internal/adapters/postgresql/db"
 )
@@ -57,4 +58,11 @@ func (r *Repository) Update(
 	params db.UpdateCustomerParams,
 ) (db.Customer, error) {
 	return r.queries.UpdateCustomer(ctx, params)
+}
+
+func (r *Repository) Delete(
+	ctx context.Context,
+	id uuid.UUID,
+) (pgconn.CommandTag, error) {
+	return r.queries.DeleteCustomer(ctx, id)
 }

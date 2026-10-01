@@ -222,3 +222,47 @@ func (h *Handler) Update(c fiber.Ctx) error {
 		),
 	)
 }
+
+func (h *Handler) Delete(c fiber.Ctx) error {
+	idParam := c.Params("id")
+
+	id, err := uuid.Parse(idParam)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			response.Error(
+				fiber.StatusBadRequest,
+				"invalid customer id",
+			),
+		)
+	}
+
+	err = h.service.Delete(
+		c.Context(),
+		id,
+	)
+	if err != nil {
+		if errors.Is(err, ErrCustomerNotFound) {
+			return c.Status(fiber.StatusNotFound).JSON(
+				response.Error(
+					fiber.StatusNotFound,
+					"customer not found",
+				),
+			)
+		}
+
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			response.Error(
+				fiber.StatusInternalServerError,
+				err.Error(),
+			),
+		)
+	}
+
+	return c.JSON(
+		response.Success(
+			fiber.StatusOK,
+			"customer deleted successfully",
+			nil,
+		),
+	)
+}
