@@ -8,6 +8,7 @@ package db
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -53,6 +54,27 @@ func (q *Queries) CreateCustomer(ctx context.Context, arg CreateCustomerParams) 
 		arg.Phone,
 		arg.Address,
 	)
+	var i Customer
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Email,
+		&i.Phone,
+		&i.Address,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getCustomer = `-- name: GetCustomer :one
+SELECT id, name, email, phone, address, created_at, updated_at
+FROM customers
+WHERE id = $1
+`
+
+func (q *Queries) GetCustomer(ctx context.Context, id uuid.UUID) (Customer, error) {
+	row := q.db.QueryRow(ctx, getCustomer, id)
 	var i Customer
 	err := row.Scan(
 		&i.ID,

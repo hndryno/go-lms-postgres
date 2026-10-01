@@ -3,6 +3,8 @@ package customer
 import (
 	"context"
 
+	"github.com/google/uuid"
+
 	"github.com/hndryno/go-lms-postgresql/internal/adapters/postgresql/db"
 )
 
@@ -41,4 +43,11 @@ func (r *Repository) Count(
 	ctx context.Context,
 ) (int64, error) {
 	return r.queries.CountCustomers(ctx)
+}
+
+func (r *Repository) Get(
+	ctx context.Context,
+	id uuid.UUID,
+) (db.Customer, error) {
+	return r.queries.GetCustomer(ctx, id)
 }

@@ -1,9 +1,11 @@
 package customer
 
 import (
+	"errors"
 	"strconv"
 
 	"github.com/gofiber/fiber/v3"
+	"github.com/google/uuid"
 	"github.com/hndryno/go-lms-postgresql/internal/response"
 )
 
@@ -107,6 +109,50 @@ func (h *Handler) List(c fiber.Ctx) error {
 				Offset: int(offset),
 				Total:  total,
 			},
+		),
+	)
+}
+
+func (h *Handler) Get(c fiber.Ctx) error {
+	idParam := c.Params("id")
+
+	id, err := uuid.Parse(idParam)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			response.Error(
+				fiber.StatusBadRequest,
+				"invalid customer id",
+			),
+		)
+	}
+
+	customer, err := h.service.Get(
+		c.Context(),
+		id,
+	)
+	if err != nil {
+		if errors.Is(err, ErrCustomerNotFound) {
+			return c.Status(fiber.StatusNotFound).JSON(
+				response.Error(
+					fiber.StatusNotFound,
+					"customer not found",
+				),
+			)
+		}
+
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			response.Error(
+				fiber.StatusInternalServerError,
+				err.Error(),
+			),
+		)
+	}
+
+	return c.JSON(
+		response.Success(
+			fiber.StatusOK,
+			"customer retrieved successfully",
+			customer,
 		),
 	)
 }

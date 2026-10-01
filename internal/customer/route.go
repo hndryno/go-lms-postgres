@@ -10,4 +10,5 @@ func RegisterRoutes(
 
 	customers.Post("/", handler.Create)
 	customers.Get("/", handler.List)
+	customers.Get("/:id", handler.Get)
 }

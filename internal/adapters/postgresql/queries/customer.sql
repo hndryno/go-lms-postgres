@@ -23,3 +23,8 @@ OFFSET $2;
 -- name: CountCustomers :one
 SELECT COUNT(*)
 FROM customers;
+
+-- name: GetCustomer :one
+SELECT *
+FROM customers
+WHERE id = $1;

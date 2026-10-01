@@ -5,13 +5,10 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/hndryno/go-lms-postgresql/internal/adapters/postgresql/db"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-)
-
-var (
-	ErrNameRequired  = errors.New("name is required")
-	ErrEmailRequired = errors.New("email is required")
 )
 
 type Service struct {
@@ -83,4 +80,20 @@ func (s *Service) List(
 	}
 
 	return customers, total, nil
+}
+
+func (s *Service) Get(
+	ctx context.Context,
+	id uuid.UUID,
+) (db.Customer, error) {
+	customer, err := s.repository.Get(ctx, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return db.Customer{}, ErrCustomerNotFound
+		}
+
+		return db.Customer{}, err
+	}
+
+	return customer, nil
 }
