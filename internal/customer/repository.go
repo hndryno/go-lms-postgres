@@ -51,3 +51,10 @@ func (r *Repository) Get(
 ) (db.Customer, error) {
 	return r.queries.GetCustomer(ctx, id)
 }
+
+func (r *Repository) Update(
+	ctx context.Context,
+	params db.UpdateCustomerParams,
+) (db.Customer, error) {
+	return r.queries.UpdateCustomer(ctx, params)
+}

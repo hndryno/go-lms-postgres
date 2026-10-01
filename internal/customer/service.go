@@ -97,3 +97,48 @@ func (s *Service) Get(
 
 	return customer, nil
 }
+
+func (s *Service) Update(
+	ctx context.Context,
+	id uuid.UUID,
+	req UpdateCustomerRequest,
+) (db.Customer, error) {
+	req.Name = strings.TrimSpace(req.Name)
+	req.Email = strings.TrimSpace(req.Email)
+	req.Phone = strings.TrimSpace(req.Phone)
+	req.Address = strings.TrimSpace(req.Address)
+
+	if req.Name == "" {
+		return db.Customer{}, ErrNameRequired
+	}
+
+	if req.Email == "" {
+		return db.Customer{}, ErrEmailRequired
+	}
+
+	customer, err := s.repository.Update(
+		ctx,
+		db.UpdateCustomerParams{
+			ID:    id,
+			Name:  req.Name,
+			Email: req.Email,
+			Phone: pgtype.Text{
+				String: req.Phone,
+				Valid:  req.Phone != "",
+			},
+			Address: pgtype.Text{
+				String: req.Address,
+				Valid:  req.Address != "",
+			},
+		},
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return db.Customer{}, ErrCustomerNotFound
+		}
+
+		return db.Customer{}, err
+	}
+
+	return customer, nil
+}

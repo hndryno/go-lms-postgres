@@ -156,3 +156,69 @@ func (h *Handler) Get(c fiber.Ctx) error {
 		),
 	)
 }
+
+func (h *Handler) Update(c fiber.Ctx) error {
+	idParam := c.Params("id")
+
+	id, err := uuid.Parse(idParam)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			response.Error(
+				fiber.StatusBadRequest,
+				"invalid customer id",
+			),
+		)
+	}
+
+	var req UpdateCustomerRequest
+
+	if err := c.Bind().Body(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			response.Error(
+				fiber.StatusBadRequest,
+				"invalid request body",
+			),
+		)
+	}
+
+	customer, err := h.service.Update(
+		c.Context(),
+		id,
+		req,
+	)
+	if err != nil {
+		if errors.Is(err, ErrCustomerNotFound) {
+			return c.Status(fiber.StatusNotFound).JSON(
+				response.Error(
+					fiber.StatusNotFound,
+					"customer not found",
+				),
+			)
+		}
+
+		if errors.Is(err, ErrNameRequired) ||
+			errors.Is(err, ErrEmailRequired) {
+			return c.Status(fiber.StatusBadRequest).JSON(
+				response.Error(
+					fiber.StatusBadRequest,
+					err.Error(),
+				),
+			)
+		}
+
+		return c.Status(fiber.StatusInternalServerError).JSON(
+			response.Error(
+				fiber.StatusInternalServerError,
+				err.Error(),
+			),
+		)
+	}
+
+	return c.JSON(
+		response.Success(
+			fiber.StatusOK,
+			"customer updated successfully",
+			customer,
+		),
+	)
+}
