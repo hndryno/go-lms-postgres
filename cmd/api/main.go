@@ -10,6 +10,7 @@ import (
 	"github.com/hndryno/go-lms-postgresql/internal/adapters/postgresql/db"
 	"github.com/hndryno/go-lms-postgresql/internal/config"
 	"github.com/hndryno/go-lms-postgresql/internal/customer"
+	"github.com/hndryno/go-lms-postgresql/internal/loan"
 )
 
 func main() {
@@ -33,15 +34,18 @@ func main() {
 	customerService := customer.NewService(customerRepository)
 	customerHandler := customer.NewHandler(customerService)
 
+	// Loan
+	loanRepository := loan.NewRepository(queries)
+	loanService := loan.NewService(loanRepository)
+	loanHandler := loan.NewHandler(loanService)
+
 	// Fiber
 	app := fiber.New()
 
 	api := app.Group("/api/v1")
 
-	customer.RegisterRoutes(
-		api,
-		customerHandler,
-	)
+	customer.RegisterRoutes(api, customerHandler)
+	loan.RegisterRoutes(api, loanHandler)
 
 	app.Get("/health", func(c fiber.Ctx) error {
 		return c.JSON(fiber.Map{

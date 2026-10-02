@@ -18,3 +18,18 @@ type Customer struct {
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
 }
+
+type Loan struct {
+	ID              uuid.UUID          `json:"id"`
+	CustomerID      uuid.UUID          `json:"customer_id"`
+	PrincipalAmount pgtype.Numeric     `json:"principal_amount"`
+	InterestRate    pgtype.Numeric     `json:"interest_rate"`
+	Tenor           int32              `json:"tenor"`
+	InterestAmount  pgtype.Numeric     `json:"interest_amount"`
+	TotalAmount     pgtype.Numeric     `json:"total_amount"`
+	PaidAmount      pgtype.Numeric     `json:"paid_amount"`
+	Status          string             `json:"status"`
+	StartDate       pgtype.Date        `json:"start_date"`
+	CreatedAt       pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
+}
