@@ -14,11 +14,6 @@ DECLARE
     v_remaining_amount NUMERIC(15, 2);
 BEGIN
 
-    /*
-     * Lock loan row.
-     * Ini penting supaya dua repayment
-     * tidak mengubah paid_amount secara bersamaan.
-     */
     SELECT
         total_amount,
         paid_amount
