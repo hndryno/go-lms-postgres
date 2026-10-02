@@ -33,3 +33,12 @@ type Loan struct {
 	CreatedAt       pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt       pgtype.Timestamptz `json:"updated_at"`
 }
+
+type Repayment struct {
+	ID          uuid.UUID          `json:"id"`
+	LoanID      uuid.UUID          `json:"loan_id"`
+	Amount      pgtype.Numeric     `json:"amount"`
+	PaymentDate pgtype.Date        `json:"payment_date"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
+}
