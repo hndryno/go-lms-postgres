@@ -11,3 +11,14 @@ CALL create_loan(
 SELECT *
 FROM loans
 WHERE id = $1;
+
+-- name: ListLoans :many
+SELECT *
+FROM loans
+ORDER BY created_at DESC
+LIMIT $1
+OFFSET $2;
+
+-- name: CountLoans :one
+SELECT COUNT(*)
+FROM loans;

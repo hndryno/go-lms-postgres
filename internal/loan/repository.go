@@ -31,3 +31,20 @@ func (r *Repository) Get(
 ) (db.Loan, error) {
 	return r.queries.GetLoan(ctx, id)
 }
+
+func (r *Repository) List(
+	ctx context.Context,
+	limit int32,
+	offset int32,
+) ([]db.Loan, error) {
+	return r.queries.ListLoans(ctx, db.ListLoansParams{
+		Limit:  limit,
+		Offset: offset,
+	})
+}
+
+func (r *Repository) Count(
+	ctx context.Context,
+) (int64, error) {
+	return r.queries.CountLoans(ctx)
+}

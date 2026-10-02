@@ -9,4 +9,6 @@ func RegisterRoutes(
 	loans := router.Group("/loans")
 
 	loans.Post("/", handler.Create)
+	loans.Get("/", handler.List)
+	loans.Get("/:id", handler.Get)
 }

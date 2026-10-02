@@ -12,6 +12,18 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const countLoans = `-- name: CountLoans :one
+SELECT COUNT(*)
+FROM loans
+`
+
+func (q *Queries) CountLoans(ctx context.Context) (int64, error) {
+	row := q.db.QueryRow(ctx, countLoans)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createLoan = `-- name: CreateLoan :exec
 CALL create_loan(
     $1::UUID,
@@ -65,4 +77,50 @@ func (q *Queries) GetLoan(ctx context.Context, id uuid.UUID) (Loan, error) {
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const listLoans = `-- name: ListLoans :many
+SELECT id, customer_id, principal_amount, interest_rate, tenor, interest_amount, total_amount, paid_amount, status, start_date, created_at, updated_at
+FROM loans
+ORDER BY created_at DESC
+LIMIT $1
+OFFSET $2
+`
+
+type ListLoansParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) ListLoans(ctx context.Context, arg ListLoansParams) ([]Loan, error) {
+	rows, err := q.db.Query(ctx, listLoans, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Loan
+	for rows.Next() {
+		var i Loan
+		if err := rows.Scan(
+			&i.ID,
+			&i.CustomerID,
+			&i.PrincipalAmount,
+			&i.InterestRate,
+			&i.Tenor,
+			&i.InterestAmount,
+			&i.TotalAmount,
+			&i.PaidAmount,
+			&i.Status,
+			&i.StartDate,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

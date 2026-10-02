@@ -8,4 +8,5 @@ var (
 	ErrInterestInvalid  = errors.New("interest rate cannot be negative")
 	ErrTenorInvalid     = errors.New("tenor must be greater than zero")
 	ErrCustomerNotFound = errors.New("customer not found")
+	ErrLoanNotFound     = errors.New("loan not found")
 )

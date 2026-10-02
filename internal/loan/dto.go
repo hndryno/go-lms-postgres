@@ -10,3 +10,8 @@ type CreateLoanRequest struct {
 	InterestRate    float64   `json:"interest_rate"`
 	Tenor           int32     `json:"tenor"`
 }
+
+type ListLoanRequest struct {
+	Limit  int `json:"limit"`
+	Offset int `json:"offset"`
+}

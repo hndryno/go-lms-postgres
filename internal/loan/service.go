@@ -79,3 +79,48 @@ func (s *Service) Create(
 
 	return loan, nil
 }
+
+func (s *Service) Get(
+	ctx context.Context,
+	id uuid.UUID,
+) (db.Loan, error) {
+	loan, err := s.repository.Get(ctx, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return db.Loan{}, ErrLoanNotFound
+		}
+
+		return db.Loan{}, err
+	}
+
+	return loan, nil
+}
+
+func (s *Service) List(
+	ctx context.Context,
+	req ListLoanRequest,
+) ([]db.Loan, int64, error) {
+	if req.Limit <= 0 {
+		req.Limit = 10
+	}
+
+	if req.Offset < 0 {
+		req.Offset = 0
+	}
+
+	loans, err := s.repository.List(
+		ctx,
+		int32(req.Limit),
+		int32(req.Offset),
+	)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	total, err := s.repository.Count(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return loans, total, nil
+}
