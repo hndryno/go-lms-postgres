@@ -63,7 +63,7 @@ func main() {
 	})
 
 	log.Printf(
-		"server running on :%s",
+		"server running ons :%s",
 		cfg.AppPort,
 	)
 
